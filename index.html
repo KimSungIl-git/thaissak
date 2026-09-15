@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>타이싹 · 나의 태국어 회화 정원</title>
+
+<!-- PWA 설정 -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3D5A80">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="타이싹">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --indigo: #3D5A80;
+    --indigo-dark: #2C4360;
+    --coral: #EE6C4D;
+    --coral-soft: rgba(238,108,77,0.14);
+    --ivory: #FAF6EE;
+    --ink: #22314A;
+    --sub: #5C7089;
+    --card-shadow: 0 4px 16px rgba(34,49,74,0.10);
+    --radius: 20px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--ivory);
+    background-image:
+      radial-gradient(circle at 8% 6%, rgba(61,90,128,0.09) 0, transparent 45%),
+      radial-gradient(circle at 92% 88%, rgba(238,108,77,0.10) 0, transparent 45%);
+    font-family:'Pretendard', sans-serif;
+    color: var(--ink);
+    min-height:100vh;
+    padding-bottom: 84px;
+  }
+  h1,h2,h3,.brand,.tabbar button{font-family:'Black Han Sans', 'Pretendard', sans-serif;}
+
+  header{ padding: 22px 20px 14px; text-align:center; }
+  .brand{ font-size: 30px; color: var(--indigo-dark); display:flex; align-items:center; justify-content:center; gap:8px; }
+  .brand .leaf{ font-size: 26px; }
+  .tagline{ font-size: 13px; color: var(--sub); margin-top: 2px; letter-spacing: 0.3px; }
+
+  main{ max-width: 520px; margin: 0 auto; padding: 0 16px; }
+
+  .screen{ display:none; animation: fadeIn .25s ease; }
+  .screen.active{ display:block; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .card{ background:#fff; border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 20px; margin-bottom: 16px; }
+
+  .empty{ text-align:center; padding: 40px 20px; color: var(--sub); }
+  .empty .big{ font-size:44px; display:block; margin-bottom:10px;}
+  .empty p{ margin:4px 0; font-size:14px; line-height:1.6;}
+
+  .chiprow{ display:flex; gap:8px; overflow-x:auto; padding: 4px 2px 14px; -webkit-overflow-scrolling: touch; }
+  .chip{
+    flex:0 0 auto; padding: 7px 14px; border-radius: 999px; background: #fff;
+    border: 1.5px solid rgba(61,90,128,0.3); color: var(--sub); font-size: 13px;
+    font-weight: 700; cursor:pointer; white-space:nowrap; transition: all .15s;
+  }
+  .chip.active{ background: var(--indigo); border-color: var(--indigo); color:#fff; }
+
+  /* ---------- Flashcard ---------- */
+  .flash-wrap{ perspective: 1200px; margin-bottom: 14px; }
+  .flashcard{
+    min-height: 250px; border-radius: 24px;
+    background: linear-gradient(160deg, #ffffff 0%, #f3ede0 100%);
+    box-shadow: var(--card-shadow); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; padding: 28px 20px;
+    cursor:pointer; position:relative; border: 1.5px solid rgba(61,90,128,0.12);
+  }
+  .flash-cat{
+    position:absolute; top:14px; left:16px; font-size:12px; font-weight:700;
+    color: var(--indigo-dark); background: rgba(61,90,128,0.1); padding:3px 10px; border-radius:999px;
+  }
+  .flash-growth{ position:absolute; top:12px; right:14px; font-size:20px; }
+  .flash-thai{ font-size: 36px; font-weight: 900; color: var(--ink); margin-bottom: 4px; word-break: break-word; }
+  .flash-roman{ font-size: 15px; color: var(--indigo); font-weight:700; margin-bottom: 8px; }
+  .flash-meaning{ font-size: 18px; color: var(--indigo-dark); font-weight:700; min-height: 26px; }
+  .flash-example{
+    margin-top: 14px; font-size: 13.5px; color: #8a4a34; background: var(--coral-soft);
+    padding: 10px 14px; border-radius: 12px; line-height:1.5; display:flex; align-items:center; gap:10px; text-align:left;
+  }
+  .flash-example-text{ flex:1; }
+  .flash-example-btn{ flex:0 0 auto; background:none; font-size:17px; color: #8a4a34; padding:2px; }
+  .flash-hint{ margin-top:14px; font-size:12px; color:#b0a48c; }
+
+  .flash-breakdown{ margin-top:14px; width:100%; text-align:left; }
+  .breakdown-title{ font-weight:700; font-size:11px; color:var(--sub); margin-bottom:6px; }
+  .breakdown-words{ display:flex; flex-wrap:wrap; gap:8px; }
+  .breakdown-word{ background:#fff; border:1px solid rgba(61,90,128,0.15); border-radius:10px; padding:6px 10px; }
+  .breakdown-word .bw-thai{ font-weight:800; font-size:15px; }
+  .breakdown-word .bw-roman{ color:var(--indigo); font-size:11px; font-weight:600; }
+  .breakdown-word .bw-meaning{ color:var(--sub); font-size:11px; }
+  .breakdown-sentence{ background:#fff; border:1px solid rgba(61,90,128,0.15); border-radius:12px; padding:10px 12px; }
+  .breakdown-sentence .bs-thai{ font-weight:800; font-size:16px; }
+  .breakdown-sentence .bs-roman{ color:var(--indigo); font-size:12px; font-weight:600; margin-top:2px; }
+  .breakdown-sentence .bs-meaning{ color:var(--sub); font-size:12px; margin-top:2px; }
+  .breakdown-btn{ font-size:12.5px; padding:8px 14px; }
+
+  .grade-row{ display:flex; gap:10px; margin-top:12px; }
+  .grade-row button{ flex:1; }
+  .btn-remember{ background: var(--indigo); color:#fff; }
+  .btn-again{ background: #fff; color: var(--coral); border: 1.5px solid rgba(238,108,77,0.5); }
+
+  .rowbtns{ display:flex; gap:10px; }
+  .rowbtns.three button{ flex:1; }
+
+  button{ font-family: inherit; border:none; cursor:pointer; }
+  .btn{
+    padding: 12px 16px; border-radius: 14px; font-size: 14.5px; font-weight: 700;
+    background: var(--indigo); color:#fff; transition: transform .1s, opacity .15s;
+  }
+  .btn:active{ transform: scale(0.97); }
+  .btn.secondary{ background: #fff; color: var(--indigo); border: 1.5px solid rgba(61,90,128,0.4); }
+  .btn.ghost{ background: transparent; color: #8a4a34; border: 1.5px solid rgba(238,108,77,0.3); }
+  .btn.coral{ background: var(--coral); }
+  .btn.block{ width:100%; }
+  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
+
+  .progress-line{ text-align:center; font-size:12.5px; color: var(--sub); margin: 10px 0 4px; font-weight:700; }
+
+  /* ---------- 표현 목록 ---------- */
+  .word-item{ display:flex; align-items:center; gap: 10px; padding: 12px 4px; border-bottom: 1px solid rgba(34,49,74,0.08); }
+  .word-item:last-child{ border-bottom:none; }
+  .word-item .growth{ font-size:20px; width:26px; text-align:center; }
+  .word-item .info{ flex:1; min-width:0; }
+  .word-item .w{ font-weight:800; font-size:16px; }
+  .word-item .r{ font-size:12px; color:var(--indigo); font-weight:600; }
+  .word-item .m{ font-size:12.5px; color:var(--sub); }
+  .word-item .cat{ font-size: 10.5px; color: #8a4a34; background: var(--coral-soft); padding:2px 8px; border-radius:999px; flex:0 0 auto; }
+  .word-item .del{ background:none; color:#c98; font-size:18px; padding:4px 6px; flex:0 0 auto; }
+  .word-item .extract{ background:none; color:var(--indigo); font-size:11px; font-weight:700; padding:4px 8px; flex:0 0 auto; border:1.5px solid rgba(61,90,128,0.3); border-radius:999px; white-space:nowrap; }
+
+  .level-tag{ font-size: 10.5px; font-weight:700; padding:2px 8px; border-radius:999px; flex:0 0 auto; }
+  .level-초급{ color:#2f6b3a; background:rgba(76,175,80,0.15); }
+  .level-중급{ color:#8a6a1e; background:rgba(255,183,77,0.2); }
+  .level-고급{ color:#8a3434; background:rgba(238,108,77,0.18); }
+  .flash-level{ position:absolute; top:14px; right:44px; }
+
+  input[type=text], input[type=password], textarea, select{
+    width:100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid rgba(61,90,128,0.3);
+    font-family: inherit; font-size: 14.5px; background:#fff; color: var(--ink); margin-bottom: 10px;
+  }
+  textarea{ min-height: 70px; resize:vertical; }
+  label{ font-size:12.5px; font-weight:700; color:var(--sub); display:block; margin: 10px 0 4px; }
+  .field-hint{ font-size:11.5px; color:#a9a08a; margin: -6px 0 10px; }
+  .btn + .field-hint{ margin-top: 8px; }
+  .ai-row + .field-hint{ margin-top: 8px; }
+
+  .section-title{ font-size: 17px; margin: 4px 0 12px; display:flex; align-items:center; gap:6px; }
+
+  .ai-row{ display:flex; gap:8px; align-items:flex-end; }
+  .ai-row input{ flex:1; margin-bottom:0; }
+  .ai-row button{ flex:0 0 auto; white-space:nowrap; }
+
+  /* ---------- Stats ---------- */
+  .stat-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .stat-box{ background:#fff; border-radius:16px; box-shadow: var(--card-shadow); padding: 16px; text-align:center; }
+  .stat-num{ font-size: 26px; font-weight:900; color: var(--indigo); }
+  .stat-label{ font-size:12px; color: var(--sub); margin-top:2px; font-weight:700; }
+
+  /* ---------- Tabbar ---------- */
+  .tabbar{
+    position:fixed; bottom:0; left:0; right:0; background:#fff;
+    border-top: 1px solid rgba(34,49,74,0.08); display:flex; justify-content:space-around;
+    padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); z-index: 50;
+  }
+  .tabbar button{ background:none; display:flex; flex-direction:column; align-items:center; gap:2px; color: #b0a894; font-size: 11px; padding: 4px 8px; }
+  .tabbar button .ti{ font-size:20px; }
+  .tabbar button.active{ color: var(--indigo); }
+
+  .toast{
+    position:fixed; bottom: 90px; left:50%; transform: translateX(-50%); background: var(--indigo-dark);
+    color:#fff; padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight:700; opacity:0;
+    pointer-events:none; transition: opacity .25s, transform .25s; z-index: 100; white-space:nowrap;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
+
+  .cat-manage-row{ display:flex; align-items:center; justify-content:space-between; padding: 8px 4px; border-bottom: 1px solid rgba(34,49,74,0.06); }
+  .cat-manage-row:last-child{ border-bottom:none; }
+  .cat-manage-row .del{ background:none; color:#c98; font-size:14px; }
+
+  .toggle-row{ display:flex; align-items:center; justify-content:space-between; padding: 6px 0; }
+  .switch{ width:44px; height:26px; background:#e6dfc9; border-radius:999px; position:relative; transition: background .2s; }
+  .switch.on{ background: var(--indigo); }
+  .switch::after{ content:''; position:absolute; top:3px; left:3px; width:20px; height:20px; background:#fff; border-radius:50%; transition: left .2s; }
+  .switch.on::after{ left:21px; }
+
+  .spinner{ display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.5); border-top-color:#fff; border-radius:50%; animation: spin .7s linear infinite; vertical-align:-2px; margin-right:6px; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  /* ---------- AI 추천 목록 ---------- */
+  .suggest-item{
+    display:flex; gap:10px; align-items:flex-start; padding: 12px; margin-bottom:8px;
+    background: var(--ivory); border-radius: 14px; border: 1.5px solid rgba(61,90,128,0.15);
+  }
+  .suggest-item input[type=checkbox]{ width:18px; height:18px; margin-top:2px; accent-color: var(--indigo); flex:0 0 auto; }
+  .suggest-item .sg-body{ flex:1; min-width:0; }
+  .suggest-item .sg-kr{ font-size:13px; color:var(--sub); font-weight:600; margin-bottom:2px; }
+  .suggest-item .sg-thai{ font-size:17px; font-weight:800; color:var(--ink); }
+  .suggest-item .sg-roman{ font-size:12.5px; color:var(--indigo); font-weight:600; }
+  .suggest-item .sg-ex{ font-size:12px; color:#8a4a34; margin-top:4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><span class="leaf">🌱</span> 타이싹</div>
+  <div class="tagline">싹트는 나의 태국어 회화</div>
+</header>
+
+<main>
+
+  <!-- ===================== 학습장 (플래시카드) ===================== -->
+  <section id="tab-learn" class="screen active">
+    <div class="chiprow" id="learnCatChips"></div>
+    <div class="chiprow" id="learnLevelChips"></div>
+    <div id="learnEmpty" class="empty" style="display:none;">
+      <span class="big">🌾</span>
+      <p><b>이 카테고리엔 아직 씨앗이 없어요.</b></p>
+      <p>'표현추가' 탭에서 첫 표현을 심어보세요!</p>
+    </div>
+    <div id="learnBody" style="display:none;">
+      <div class="flash-wrap">
+        <div class="flashcard" id="flashcard">
+          <span class="flash-cat" id="flashCat"></span>
+          <span class="flash-level level-tag" id="flashLevel"></span>
+          <span class="flash-growth" id="flashGrowth"></span>
+          <div class="flash-thai" id="flashThai"></div>
+          <div class="flash-roman" id="flashRoman"></div>
+          <div class="flash-meaning" id="flashMeaning"></div>
+          <div class="flash-example" id="flashExample" style="display:none;">
+            <span class="flash-example-text" id="flashExampleText"></span>
+            <button class="flash-example-btn" onclick="speakExample(event)">🔊</button>
+          </div>
+          <div class="flash-hint" id="flashHint">탭해서 뜻 보기</div>
+          <div class="flash-breakdown" id="flashBreakdown" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="rowbtns three" style="margin-bottom:10px;">
+        <button class="btn secondary" onclick="prevCard()">◀ 이전</button>
+        <button class="btn ghost" onclick="speakCurrent()">🔊 발음</button>
+        <button class="btn secondary" onclick="nextCard()">다음 ▶</button>
+      </div>
+      <div class="progress-line" id="learnProgress"></div>
+      <div style="text-align:center; margin-bottom:10px;">
+        <button class="btn ghost" style="padding:6px 14px; font-size:12.5px;" onclick="reshuffleLearn()">🔀 순서 다시 섞기</button>
+      </div>
+      <div class="grade-row" id="gradeRow" style="display:none;">
+        <button class="btn btn-again" onclick="gradeCard(false)">🔄 다시 볼게요</button>
+        <button class="btn btn-remember" onclick="gradeCard(true)">✅ 기억났어요</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 표현추가 ===================== -->
+  <section id="tab-add" class="screen">
+
+    <div class="card">
+      <h3 class="section-title">🎲 AI 추천 받기</h3>
+      <label>어떤 상황의 표현을 추천받을까요?</label>
+      <select id="suggestCategory"></select>
+      <button class="btn coral block" id="suggestBtn" onclick="suggestExpressions()">추천 받기</button>
+      <div class="field-hint" id="suggestHint">Claude API 키가 필요해요 (설정 탭에서 등록)</div>
+      <div id="suggestResults" style="margin-top:12px;"></div>
+      <button class="btn secondary block" id="suggestAddBtn" style="display:none; margin-top:4px;" onclick="addSelectedSuggestions()">선택한 표현 담기</button>
+    </div>
+
+    <div class="card">
+      <h3 class="section-title">✨ AI로 한 문장 채우기</h3>
+      <label>한국어로 표현을 입력하세요</label>
+      <div class="ai-row">
+        <input type="text" id="aiInput" placeholder="예: 이거 얼마예요?">
+        <button class="btn coral" id="aiFillBtn" onclick="fillWithAI()">AI로 채우기</button>
+      </div>
+      <div class="field-hint" id="aiHint">Claude API 키가 필요해요 (설정 탭에서 등록)</div>
+    </div>
+
+    <div class="card">
+      <h3 class="section-title">✏️ 표현 추가 (직접 수정 가능)</h3>
+      <label>태국어 문자</label>
+      <input type="text" id="addThai" placeholder="예: นี่เท่าไหร่คะ">
+      <label>로마자 표기 (성조 포함)</label>
+      <input type="text" id="addRoman" placeholder="예: nîi tâo-rai ká">
+      <label>한글 뜻</label>
+      <input type="text" id="addMeaning" placeholder="예: 이거 얼마예요?">
+      <label>예문 (선택)</label>
+      <input type="text" id="addExample" placeholder="예: 시장에서 물건 가격을 물어볼 때">
+      <label>카테고리</label>
+      <select id="addCategory"></select>
+      <label>난이도</label>
+      <select id="addLevel">
+        <option value="초급">초급</option>
+        <option value="중급">중급</option>
+        <option value="고급">고급</option>
+      </select>
+      <button class="btn block" onclick="addSingleExpression()">표현 심기 🌱</button>
+    </div>
+
+    <div class="card">
+      <h3 class="section-title">🗂️ 내 표현 목록</h3>
+      <div class="chiprow" id="listCatChips"></div>
+      <div id="listEmpty" class="empty" style="display:none;">
+        <span class="big">🌰</span>
+        <p>아직 심은 표현이 없어요.</p>
+      </div>
+      <div id="wordList"></div>
+    </div>
+  </section>
+
+  <!-- ===================== 통계 ===================== -->
+  <section id="tab-stats" class="screen">
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-label">전체 표현</div></div>
+      <div class="stat-box"><div class="stat-num" id="statDone">0</div><div class="stat-label">암기 완료 🌸</div></div>
+      <div class="stat-box"><div class="stat-num" id="statToday">0</div><div class="stat-label">오늘 맞춘 개수</div></div>
+      <div class="stat-box"><div class="stat-num" id="statStreak">0</div><div class="stat-label">연속 학습일 🔥</div></div>
+    </div>
+    <div class="card">
+      <h3 class="section-title">🌱 카테고리별 진행도</h3>
+      <div id="catStats"></div>
+    </div>
+  </section>
+
+  <!-- ===================== 설정 ===================== -->
+  <section id="tab-settings" class="screen">
+
+    <div class="card">
+      <h3 class="section-title">✨ AI 자동 채움 설정</h3>
+      <label>Claude API 키</label>
+      <input type="password" id="claudeApiKey" placeholder="sk-ant-...">
+      <div class="field-hint">이 키는 코드에 저장되지 않고, 이 브라우저에만(localStorage) 저장돼요. 사용량은 본인 API 계정으로 청구돼요.</div>
+      <button class="btn block" onclick="saveClaudeKey()">저장</button>
+    </div>
+
+    <div class="card">
+      <h3 class="section-title">🔊 발음 설정</h3>
+      <div class="toggle-row">
+        <div>
+          <div style="font-weight:700; font-size:14px;">ElevenLabs 음성 사용</div>
+          <div class="field-hint" style="margin:2px 0 0;">끄면 브라우저 기본 음성으로 재생돼요 (무료, 단 태국어 지원은 기기마다 달라요)</div>
+        </div>
+        <div class="switch" id="elToggle" onclick="toggleElevenLabs()"></div>
+      </div>
+      <div id="elSettings" style="display:none; margin-top:12px;">
+        <label>ElevenLabs API 키</label>
+        <input type="password" id="elApiKey" placeholder="sk_...">
+        <div class="field-hint">이 키도 이 브라우저에만 저장돼요.</div>
+        <button class="btn secondary block" onclick="loadVoices()">사용 가능한 목소리 불러오기</button>
+        <label style="margin-top:12px;">목소리 선택</label>
+        <select id="voiceSelect"><option value="">먼저 목소리를 불러와주세요</option></select>
+        <button class="btn block" style="margin-top:8px;" onclick="saveElSettings()">저장</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="section-title">🗣️ 경어 표현</h3>
+      <label>AI가 문장을 만들 때 어떤 경어를 쓸까요?</label>
+      <select id="politeStyle" onchange="savePoliteStyle()">
+        <option value="khrap">크랍 (남성 ครับ)</option>
+        <option value="kha">카 (여성 ค่ะ/คะ)</option>
+      </select>
+      <div class="field-hint">이미 저장된 표현에는 적용 안 돼요. 새로 AI로 만드는 표현부터 반영돼요.</div>
+    </div>
+
+    <div class="card">
+      <h3 class="section-title">🏷️ 카테고리 관리</h3>
+      <div id="catManageList"></div>
+      <label style="margin-top:10px;">새 카테고리</label>
+      <input type="text" id="newCatName" placeholder="예: 숙소">
+      <button class="btn secondary block" onclick="addCategory()">카테고리 추가</button>
+    </div>
+
+    <div class="card">
+      <h3 class="section-title">⚙️ 암기 완료 기준</h3>
+      <label>연속 몇 번 맞히면 '암기 완료' 처리할까요?</label>
+      <select id="streakGoal" onchange="saveStreakGoal()">
+        <option value="2">2번 연속</option>
+        <option value="3" selected>3번 연속 (추천)</option>
+        <option value="4">4번 연속</option>
+        <option value="5">5번 연속</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <h3 class="section-title">🎯 기존 표현 난이도 재분류</h3>
+      <p style="font-size:13px; color:var(--sub); margin:4px 0 10px;">지금까지 심어둔 표현은 모두 "초급"으로 기본 저장돼 있어요. 아래 버튼을 누르면 AI가 각 표현을 다시 읽고 초급/중급/고급으로 재분류해줘요.</p>
+      <button class="btn coral block" id="bulkClassifyBtn" onclick="bulkClassifyLevels()">🎯 지금 다시 분류하기</button>
+      <div class="field-hint">표현 개수에 따라 시간이 좀 걸릴 수 있어요.</div>
+    </div>
+
+    <div class="card">
+      <h3 class="section-title">💾 동기화 상태</h3>
+      <p style="font-size:13.5px; color:var(--sub); margin:4px 0;">현재: <b>연결됨 🌿 (Supabase · mylingo 프로젝트 · thai_expressions 테이블)</b></p>
+      <p class="field-hint" style="margin:0;">어떤 기기에서 열어도 같은 표현 목록이 보여요. 단, 카테고리·설정·API 키는 이 기기에만 저장돼요.</p>
+    </div>
+
+  </section>
+
+</main>
+
+<div class="tabbar">
+  <button class="tab-btn active" data-tab="learn" onclick="goTab('learn')"><span class="ti">📖</span>학습장</button>
+  <button class="tab-btn" data-tab="add" onclick="goTab('add')"><span class="ti">➕</span>표현추가</button>
+  <button class="tab-btn" data-tab="stats" onclick="goTab('stats')"><span class="ti">📊</span>통계</button>
+  <button class="tab-btn" data-tab="settings" onclick="goTab('settings')"><span class="ti">⚙️</span>설정</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* =========================================================================
+   타이싹 (Thaissak) - 태국어 회화 학습 웹앱  v1
+   저장 방식: localStorage (추후 Supabase의 mylingo 프로젝트에 새 테이블로 이전 예정)
+   ========================================================================= */
+
+/* ---------------------- STORAGE ADAPTER (Supabase 연동 지점) ----------------------
+   표현 데이터는 mylingo Supabase 프로젝트의 thai_expressions 테이블에 저장.
+   카테고리/설정/학습로그는 기기별로만 의미가 있어서 그대로 localStorage에 남겨둠. */
+const STORAGE_KEYS = {
+  categories: 'thaissak_categories',
+  settings: 'thaissak_settings',
+  studyLog: 'thaissak_study_log' // 날짜별 학습 여부 기록 (연속 학습일 계산용)
+};
+
+/* ---- Supabase 연결 (마이링고/말싹과 같은 프로젝트, thai_expressions 테이블 사용) ---- */
+const SUPABASE_URL = 'https://zcmtbelpnbulsipzunwd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjbXRiZWxwbmJ1bHNpcHp1bndkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxNjU4NjYsImV4cCI6MjEwMTc0MTg2Nn0.zwtskPFgPrFM_UdOH9mOzk1daeZ9Ichb8y7fJto77YQ';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let EXPR = []; // Supabase에서 불러온 표현을 담아두는 메모리 캐시 (화면은 항상 이 캐시를 읽음)
+
+function getExpressions(){
+  return EXPR;
+}
+
+async function fetchExpressionsFromDB(){
+  const { data, error } = await sb.from('thai_expressions').select('*').order('created_at', { ascending: false });
+  if(error){
+    console.error(error);
+    showToast('표현을 불러오지 못했어요. 인터넷 연결을 확인해주세요');
+    return [];
+  }
+  return data || [];
+}
+
+async function insertExpressionDB(obj){
+  const { data, error } = await sb.from('thai_expressions').insert(obj).select();
+  if(error){
+    console.error(error);
+    showToast('저장 실패: ' + error.message);
+    return null;
+  }
+  return data ? data[0] : null;
+}
+
+async function updateExpressionDB(id, fields){
+  const { error } = await sb.from('thai_expressions').update(fields).eq('id', id);
+  if(error){
+    console.error(error);
+    showToast('업데이트 실패');
+  }
+}
+
+async function deleteExpressionDB(id){
+  const { error } = await sb.from('thai_expressions').delete().eq('id', id);
+  if(error){
+    console.error(error);
+    showToast('삭제 실패');
+  }
+}
+/* ---------------------------------------------------------------------- */
+
+const PROTECTED_CATEGORY = '기초단어'; // 삭제 불가, 항상 맨 앞에 위치
+
+function getCategories(){
+  const saved = localStorage.getItem(STORAGE_KEYS.categories);
+  let cats = saved ? JSON.parse(saved) : ['음식','교통','쇼핑','인사/일상'];
+  // 고정 카테고리가 없으면 추가하고, 있으면 맨 앞으로 정렬
+  cats = [PROTECTED_CATEGORY, ...cats.filter(c => c !== PROTECTED_CATEGORY)];
+  localStorage.setItem(STORAGE_KEYS.categories, JSON.stringify(cats));
+  return cats;
+}
+function saveCategories(cats){ localStorage.setItem(STORAGE_KEYS.categories, JSON.stringify(cats)); }
+
+// 도메인이 바뀌는 등으로 로컬 카테고리 목록이 초기화됐을 때,
+// 실제 표현 데이터(Supabase)에 남아있는 카테고리를 자동으로 복구해줌
+function reconcileCategoriesWithExpressions(){
+  const cats = getCategories();
+  const usedCats = [...new Set(EXPR.map(e => e.category).filter(Boolean))];
+  const missing = usedCats.filter(c => !cats.includes(c));
+  if(missing.length > 0){
+    saveCategories([...cats, ...missing]);
+  }
+}
+function getSettings(){ return JSON.parse(localStorage.getItem(STORAGE_KEYS.settings) || '{}'); }
+function saveSettings(s){ localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(s)); }
+function getStudyLog(){ return JSON.parse(localStorage.getItem(STORAGE_KEYS.studyLog) || '{}'); }
+function saveStudyLog(log){ localStorage.setItem(STORAGE_KEYS.studyLog, JSON.stringify(log)); }
+/* ---------------------------------------------------------------------- */
+
+const GROWTH_ICONS = ['🌰','🌱','🌿','🌺']; // streak 0,1,2, 완료(3+)
+const LEVELS = ['초급','중급','고급'];
+function normalizeLevel(lv){ return LEVELS.includes(lv) ? lv : '초급'; }
+
+function uid(){ return 'e_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+function showToast(msg, duration = 1800){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(()=> t.classList.remove('show'), duration);
+}
+
+/* ---------------------- TAB NAV ---------------------- */
+let currentTab = 'learn';
+let learnFilterCat = 'all';
+let learnFilterLevel = 'all';
+let listFilterCat = 'all';
+
+function goTab(name){
+  currentTab = name;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  if(name === 'learn') renderLearn();
+  if(name === 'add') renderAddScreen();
+  if(name === 'stats') renderStats();
+  if(name === 'settings') renderSettings();
+}
+
+/* ---------------------- CATEGORY / LEVEL CHIPS (공통) ---------------------- */
+function renderChips(containerId, items, activeVal, onSelect){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  const all = document.createElement('button');
+  all.className = 'chip' + (activeVal === 'all' ? ' active' : '');
+  all.textContent = '전체';
+  all.onclick = () => onSelect('all');
+  el.appendChild(all);
+  items.forEach(c => {
+    const chip = document.createElement('button');
+    chip.className = 'chip' + (activeVal === c ? ' active' : '');
+    chip.textContent = c;
+    chip.onclick = () => onSelect(c);
+    el.appendChild(chip);
+  });
+}
+
+/* ---------------------- 학습장 (플래시카드, 자가 채점) ---------------------- */
+let learnQueue = [];
+let learnIdx = 0;
+let flashFlipped = false;
+let learnOrderCache = {}; // 카테고리별 이번 세션에서 섞인 순서 (id 배열)
+
+function shuffleArray(arr){
+  const a = [...arr];
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getShuffledQueue(catKey, list){
+  const ids = list.map(w => w.id);
+  let order = learnOrderCache[catKey];
+  if(!order){
+    order = shuffleArray(ids);
+  } else {
+    const known = order.filter(id => ids.includes(id));
+    const newIds = shuffleArray(ids.filter(id => !order.includes(id)));
+    order = [...known, ...newIds];
+  }
+  learnOrderCache[catKey] = order;
+  const byId = Object.fromEntries(list.map(w => [w.id, w]));
+  return order.map(id => byId[id]).filter(Boolean);
+}
+
+function reshuffleLearn(){
+  delete learnOrderCache[learnFilterCat + '|' + learnFilterLevel];
+  learnIdx = 0;
+  renderLearn();
+  showToast('🔀 순서를 다시 섞었어요');
+}
+
+function renderLearn(){
+  renderChips('learnCatChips', getCategories(), learnFilterCat, (c) => { learnFilterCat = c; learnIdx = 0; renderLearn(); });
+  renderChips('learnLevelChips', LEVELS, learnFilterLevel, (lv) => { learnFilterLevel = lv; learnIdx = 0; renderLearn(); });
+  const list = getExpressions().filter(w =>
+    w.status === 'active' &&
+    (learnFilterCat === 'all' || w.category === learnFilterCat) &&
+    (learnFilterLevel === 'all' || w.level === learnFilterLevel)
+  );
+  learnQueue = getShuffledQueue(learnFilterCat + '|' + learnFilterLevel, list);
+  if(list.length === 0){
+    document.getElementById('learnEmpty').style.display = 'block';
+    document.getElementById('learnBody').style.display = 'none';
+    return;
+  }
+  document.getElementById('learnEmpty').style.display = 'none';
+  document.getElementById('learnBody').style.display = 'block';
+  if(learnIdx >= list.length) learnIdx = 0;
+  flashFlipped = false;
+  renderFlashcard();
+}
+
+function renderFlashcard(){
+  const w = learnQueue[learnIdx];
+  if(!w) return;
+  document.getElementById('flashCat').textContent = w.category;
+  const lvlEl = document.getElementById('flashLevel');
+  lvlEl.textContent = w.level || '초급';
+  lvlEl.className = 'flash-level level-tag level-' + (w.level || '초급');
+  document.getElementById('flashGrowth').textContent = GROWTH_ICONS[Math.min(w.correct_streak, 3)];
+  document.getElementById('flashThai').textContent = w.thai;
+  document.getElementById('flashRoman').textContent = w.roman;
+  document.getElementById('flashMeaning').textContent = flashFlipped ? w.meaning : '';
+  const exEl = document.getElementById('flashExample');
+  if(flashFlipped && w.example){
+    exEl.style.display = 'flex';
+    document.getElementById('flashExampleText').textContent = '💬 ' + w.example;
+  } else {
+    exEl.style.display = 'none';
+  }
+  document.getElementById('flashHint').textContent = flashFlipped ? '탭해서 다시 가리기' : '탭해서 뜻 보기';
+  document.getElementById('gradeRow').style.display = flashFlipped ? 'flex' : 'none';
+  const bdEl = document.getElementById('flashBreakdown');
+  if(flashFlipped){
+    bdEl.style.display = 'block';
+    renderBreakdownContent(w);
+  } else {
+    bdEl.style.display = 'none';
+    bdEl.innerHTML = '';
+  }
+  const filterLabel = [learnFilterCat !== 'all' ? learnFilterCat : null, learnFilterLevel !== 'all' ? learnFilterLevel : null].filter(Boolean).join(' · ') || '전체';
+  document.getElementById('learnProgress').textContent = (learnIdx+1) + ' / ' + learnQueue.length + '  ·  ' + filterLabel + ' 학습 중';
+}
+
+document.getElementById('flashcard').addEventListener('click', () => {
+  flashFlipped = !flashFlipped;
+  renderFlashcard();
+});
+
+function nextCard(){
+  if(learnQueue.length === 0) return;
+  learnIdx = (learnIdx + 1) % learnQueue.length;
+  flashFlipped = false;
+  renderFlashcard();
+}
+function prevCard(){
+  if(learnQueue.length === 0) return;
+  learnIdx = (learnIdx - 1 + learnQueue.length) % learnQueue.length;
+  flashFlipped = false;
+  renderFlashcard();
+}
+function renderBreakdownContent(w){
+  const el = document.getElementById('flashBreakdown');
+  const isWord = w.category === PROTECTED_CATEGORY;
+  if(w.breakdown){
+    if(isWord){
+      const s = w.breakdown;
+      el.innerHTML = `
+        <div class="breakdown-title">📖 이 단어가 쓰이는 예문</div>
+        <div class="breakdown-sentence">
+          <div class="bs-thai">${escapeHtml(s.thai || '')}</div>
+          <div class="bs-roman">${escapeHtml(s.roman || '')}</div>
+          <div class="bs-meaning">${escapeHtml(s.meaning || '')}</div>
+        </div>`;
+    } else {
+      const words = Array.isArray(w.breakdown) ? w.breakdown : [];
+      el.innerHTML = `
+        <div class="breakdown-title">📖 단어별로 뜯어보기</div>
+        <div class="breakdown-words">` +
+          words.map(x => `
+            <div class="breakdown-word">
+              <div class="bw-thai">${escapeHtml(x.thai || '')}</div>
+              <div class="bw-roman">${escapeHtml(x.roman || '')}</div>
+              <div class="bw-meaning">${escapeHtml(x.meaning || '')}</div>
+            </div>`).join('') +
+        `</div>`;
+    }
+  } else {
+    const label = isWord ? '📖 이 단어 예문 보기' : '📖 단어별로 뜯어보기';
+    el.innerHTML = `<button class="btn ghost breakdown-btn" id="breakdownBtn" onclick="fetchAndSaveBreakdown('${w.id}')">${label}</button>`;
+  }
+}
+
+async function fetchAndSaveBreakdown(id){
+  const s = getSettings();
+  if(!s.claudeApiKey){ showToast('설정 탭에서 Claude API 키를 먼저 등록해주세요'); return; }
+  const w = EXPR.find(e => e.id === id);
+  if(!w) return;
+  const isWord = w.category === PROTECTED_CATEGORY;
+
+  const btn = document.getElementById('breakdownBtn');
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>불러오는 중...'; }
+
+  try{
+    const result = await callClaudeBreakdown(w.thai, w.meaning, isWord, s.claudeApiKey);
+    w.breakdown = result;
+    await updateExpressionDB(id, { breakdown: result });
+    renderBreakdownContent(w);
+  } catch(e){
+    console.error(e);
+    showToast('불러오기 실패: ' + e.message, 5000);
+    if(btn){ btn.disabled = false; btn.textContent = isWord ? '📖 이 단어 예문 보기' : '📖 단어별로 뜯어보기'; }
+  }
+}
+
+async function callClaudeBreakdown(thaiText, meaning, isWord, apiKey){
+  let systemPrompt, userContent;
+  if(isWord){
+    systemPrompt = `너는 태국어 학습 앱의 예문 생성 도우미야. 주어진 태국어 단어를 실제로 활용한
+자연스러운 예문을 하나 만들어줘. ${getPoliteInstruction()}
+반드시 아래 JSON 형식으로만 응답하고, 그 외의 설명이나 마크다운 코드블록은 절대 포함하지 마.
+
+{"thai": "예문 태국어 문장", "roman": "Paiboon식 로마자 표기(성조 포함)", "meaning": "예문의 한글 뜻"}`;
+    userContent = `단어: "${thaiText}" (뜻: ${meaning})`;
+  } else {
+    systemPrompt = `너는 태국어 학습 앱의 단어 분해 도우미야. 태국어는 띄어쓰기가 없어서 읽기 어려우니,
+주어진 문장을 의미 단위(단어)로 나눠서, 문장에 나온 순서대로 각 단어의 태국어·로마자 발음·한글 뜻을 알려줘.
+반드시 아래 JSON 배열 형식으로만 응답하고, 그 외의 설명이나 마크다운 코드블록은 절대 포함하지 마.
+
+[{"thai": "단어", "roman": "로마자 발음", "meaning": "한글 뜻"}]`;
+    userContent = `문장: "${thaiText}" (뜻: ${meaning})`;
+  }
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 700,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userContent }]
+    })
+  });
+
+  if(!res.ok){
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody?.error?.message || ('API 오류 (' + res.status + ')'));
+  }
+  const data = await res.json();
+  const textBlock = (data.content || []).find(b => b.type === 'text');
+  if(!textBlock) throw new Error('AI 응답을 읽지 못했어요');
+  const cleaned = textBlock.text.replace(/```json|```/g, '').trim();
+  return JSON.parse(cleaned);
+}
+
+function speakCurrent(){
+  const w = learnQueue[learnIdx];
+  if(w) speak(w.thai);
+}
+function speakExample(event){
+  event.stopPropagation();
+  const w = learnQueue[learnIdx];
+  if(w && w.example) speak(w.example);
+}
+
+async function gradeCard(remembered){
+  const w = learnQueue[learnIdx];
+  if(!w) return;
+  const goal = getStreakGoal();
+  let fields;
+  if(remembered){
+    const newStreak = w.correct_streak + 1;
+    if(newStreak >= goal){
+      fields = { correct_streak: newStreak, status: 'completed' };
+      showToast('🌸 "' + w.thai + '" 암기 완료!');
+    } else {
+      fields = { correct_streak: newStreak };
+      showToast('잘했어요! 🌱');
+    }
+  } else {
+    fields = { correct_streak: 0 };
+    showToast('괜찮아요, 다시 볼게요 🔄');
+  }
+  const idx = EXPR.findIndex(e => e.id === w.id);
+  if(idx > -1) EXPR[idx] = { ...EXPR[idx], ...fields };
+  await updateExpressionDB(w.id, fields);
+  logStudyToday();
+  renderLearn();
+}
+
+function getStreakGoal(){
+  const s = getSettings();
+  return s.streakGoal ? Number(s.streakGoal) : 3;
+}
+function logStudyToday(){
+  const log = getStudyLog();
+  const t = todayStr();
+  log[t] = (log[t] || 0) + 1;
+  saveStudyLog(log);
+}
+
+/* ---------------------- 표현추가 (수동 + AI 자동채움) ---------------------- */
+function renderAddScreen(){
+  populateCategorySelects();
+  renderChips('listCatChips', getCategories(), listFilterCat, (c) => { listFilterCat = c; renderAddScreen(); });
+  const s = getSettings();
+  const hintText = s.claudeApiKey
+    ? 'API 키가 등록돼 있어요. 바로 사용할 수 있어요.'
+    : 'Claude API 키가 필요해요 (설정 탭에서 등록)';
+  document.getElementById('aiHint').textContent = hintText;
+  document.getElementById('suggestHint').textContent = hintText;
+  renderWordList();
+}
+
+function populateCategorySelects(){
+  const cats = getCategories();
+  ['addCategory','suggestCategory'].forEach(id => {
+    const sel = document.getElementById(id);
+    const prev = sel.value;
+    sel.innerHTML = cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    if(cats.includes(prev)) sel.value = prev;
+  });
+}
+
+async function extractWordsFromExpression(id){
+  const s = getSettings();
+  if(!s.claudeApiKey){ showToast('설정 탭에서 Claude API 키를 먼저 등록해주세요'); return; }
+  const expr = EXPR.find(e => e.id === id);
+  if(!expr){ showToast('표현을 찾지 못했어요'); return; }
+
+  showToast('문장에서 단어를 뽑는 중...', 3000);
+  try{
+    const existing = getExpressions().filter(w => w.category === PROTECTED_CATEGORY).map(w => w.meaning);
+    const words = await callClaudeExtractWords(expr.thai, expr.meaning, existing, s.claudeApiKey);
+    if(words.length === 0){ showToast('추출할 단어를 찾지 못했어요'); return; }
+    AI_SUGGESTIONS = words;
+    document.getElementById('suggestCategory').value = PROTECTED_CATEGORY;
+    renderSuggestions();
+    document.getElementById('suggestResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    showToast('🌱 "' + expr.thai + '"에서 단어를 뽑았어요. 위에서 골라 담아주세요');
+  } catch(e){
+    console.error(e);
+    showToast('단어 추출 실패: ' + e.message, 5000);
+  }
+}
+
+async function callClaudeExtractWords(thaiText, koreanMeaning, existingMeanings, apiKey){
+  const systemPrompt = `너는 태국어 회화 학습 앱의 단어 추출 도우미야. 아래 태국어 문장에서
+학습 가치가 있는 핵심 단어(명사/동사/형용사 등, 조사나 의미 없는 허사는 제외)를 최대 5개까지 뽑아줘.
+이미 갖고 있는 단어와는 겹치지 않게: ${existingMeanings.length ? existingMeanings.join(', ') : '(없음)'}
+각 단어마다 난이도(level)도 판단해줘 — 반드시 "초급"/"중급"/"고급" 중 하나로 (기초 단어는 초급, 덜 흔한 단어는 중급/고급).
+
+문장: "${thaiText}" (뜻: ${koreanMeaning})
+
+반드시 아래 JSON 배열 형식으로만 응답하고, 그 외의 설명이나 마크다운 코드블록은 절대 포함하지 마.
+배열이 비어있어도 괜찮아 (뽑을 단어가 없으면 빈 배열 [] 로 응답).
+
+[{"korean": "한국어 뜻(이 단어만)", "thai": "태국어 문자", "roman": "Paiboon식 로마자 표기(성조 포함)", "example": "", "level": "초급|중급|고급 중 하나"}]`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 800,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: '이 문장에서 단어를 뽑아줘.' }]
+    })
+  });
+
+  if(!res.ok){
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody?.error?.message || ('API 오류 (' + res.status + ')'));
+  }
+  const data = await res.json();
+  const textBlock = (data.content || []).find(b => b.type === 'text');
+  if(!textBlock) throw new Error('AI 응답을 읽지 못했어요');
+  const cleaned = textBlock.text.replace(/```json|```/g, '').trim();
+  const list = JSON.parse(cleaned);
+  return Array.isArray(list) ? list : [];
+}
+
+let AI_SUGGESTIONS = [];
+
+async function suggestExpressions(){
+  const s = getSettings();
+  if(!s.claudeApiKey){ showToast('설정 탭에서 Claude API 키를 먼저 등록해주세요'); return; }
+  const category = document.getElementById('suggestCategory').value;
+
+  const btn = document.getElementById('suggestBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>추천받는 중...';
+  document.getElementById('suggestResults').innerHTML = '';
+  document.getElementById('suggestAddBtn').style.display = 'none';
+
+  try{
+    const existing = getExpressions().filter(w => w.category === category).map(w => w.meaning);
+    AI_SUGGESTIONS = await callClaudeSuggest(category, existing, s.claudeApiKey);
+    renderSuggestions();
+  } catch(e){
+    console.error(e);
+    showToast('추천 받기 실패: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '추천 받기';
+  }
+}
+
+async function callClaudeSuggest(category, existingMeanings, apiKey){
+  const isWordCategory = category === PROTECTED_CATEGORY;
+  const taskLine = isWordCategory
+    ? `한국인이 태국 여행/생활에서 자주 쓰게 될 기초 태국어 "단어"를 5개 추천해줘 (문장이 아니라 명사/동사/형용사 등 짧은 낱말 위주로, 예: 물, 맛있다, 화장실).`
+    : `한국인이 태국 여행/생활에서 "${category}" 상황에 실제로 자주 쓸 만한 태국어 회화 "표현(문장)"을 5개 추천해줘.`;
+
+  const systemPrompt = `너는 태국어 회화 학습 앱의 표현 추천 도우미야. ${taskLine}
+${getPoliteInstruction()}${isWordCategory ? ' (단, 단어 자체에는 경어를 붙이지 마)' : ''}
+이미 갖고 있는 표현과는 겹치지 않게 새로운 것으로 골라줘: ${existingMeanings.length ? existingMeanings.join(', ') : '(없음)'}
+각 항목마다 난이도(level)도 판단해줘 — 반드시 "초급"/"중급"/"고급" 중 하나로:
+초급(짧고 기본 단어 위주), 중급(일반적인 대화 수준), 고급(복잡한 문법이나 격식체, 추상적 표현).
+5개를 다 같은 난이도로 몰지 말고, 실제 난이도에 맞게 다양하게 판단해줘.
+
+반드시 아래 JSON 배열 형식으로만 응답하고, 그 외의 설명이나 마크다운 코드블록은 절대 포함하지 마.
+
+[{"korean": "한국어 표현", "thai": "태국어 문자 표기", "roman": "Paiboon식 로마자 표기(성조 기호 포함)", "example": "이 표현이 쓰이는 상황을 한국어로 짧게 한 문장", "level": "초급|중급|고급 중 하나"}]`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1200,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: isWordCategory ? '기초 단어 5개 추천해줘.' : `"${category}" 상황 표현 5개 추천해줘.` }]
+    })
+  });
+
+  if(!res.ok){
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody?.error?.message || ('API 오류 (' + res.status + ')'));
+  }
+  const data = await res.json();
+  const textBlock = (data.content || []).find(b => b.type === 'text');
+  if(!textBlock) throw new Error('AI 응답을 읽지 못했어요');
+  const cleaned = textBlock.text.replace(/```json|```/g, '').trim();
+  const list = JSON.parse(cleaned);
+  return Array.isArray(list) ? list : [];
+}
+
+function renderSuggestions(){
+  const el = document.getElementById('suggestResults');
+  if(AI_SUGGESTIONS.length === 0){
+    el.innerHTML = '<p style="font-size:13px; color:var(--sub);">추천받은 표현이 없어요.</p>';
+    document.getElementById('suggestAddBtn').style.display = 'none';
+    return;
+  }
+  el.innerHTML = AI_SUGGESTIONS.map((sg, i) => `
+    <div class="suggest-item">
+      <input type="checkbox" id="sg-${i}" checked>
+      <label for="sg-${i}" class="sg-body" style="margin:0; cursor:pointer;">
+        <div class="sg-kr">${escapeHtml(sg.korean)} <span class="level-tag level-${normalizeLevel(sg.level)}">${normalizeLevel(sg.level)}</span></div>
+        <div class="sg-thai">${escapeHtml(sg.thai)}</div>
+        <div class="sg-roman">${escapeHtml(sg.roman || '')}</div>
+        ${sg.example ? `<div class="sg-ex">💬 ${escapeHtml(sg.example)}</div>` : ''}
+      </label>
+    </div>
+  `).join('');
+  document.getElementById('suggestAddBtn').style.display = 'block';
+}
+
+async function addSelectedSuggestions(){
+  const category = document.getElementById('suggestCategory').value;
+  const toInsert = [];
+  AI_SUGGESTIONS.forEach((sg, i) => {
+    const checked = document.getElementById('sg-' + i)?.checked;
+    if(!checked) return;
+    toInsert.push({
+      id: uid(), thai: sg.thai, roman: sg.roman || '', meaning: sg.korean,
+      example: sg.example || '', category, level: normalizeLevel(sg.level), correct_streak: 0, status: 'active'
+    });
+  });
+  if(toInsert.length === 0){ showToast('선택된 표현이 없어요'); return; }
+
+  let count = 0;
+  for(const item of toInsert){
+    const inserted = await insertExpressionDB(item);
+    if(inserted){ EXPR.unshift(inserted); count++; }
+  }
+  AI_SUGGESTIONS = [];
+  document.getElementById('suggestResults').innerHTML = '';
+  document.getElementById('suggestAddBtn').style.display = 'none';
+  showToast('🌱 ' + count + '개 표현을 심었어요!');
+  renderAddScreen();
+}
+
+async function fillWithAI(){
+  const input = document.getElementById('aiInput').value.trim();
+  if(!input){ showToast('한국어 표현을 먼저 입력해주세요'); return; }
+  const s = getSettings();
+  if(!s.claudeApiKey){ showToast('설정 탭에서 Claude API 키를 먼저 등록해주세요'); return; }
+
+  const btn = document.getElementById('aiFillBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>채우는 중...';
+
+  try{
+    const result = await callClaudeAPI(input, s.claudeApiKey);
+    document.getElementById('addThai').value = result.thai || '';
+    document.getElementById('addRoman').value = result.roman || '';
+    document.getElementById('addMeaning').value = input;
+    document.getElementById('addExample').value = result.example || '';
+    document.getElementById('addLevel').value = normalizeLevel(result.level);
+    showToast('✨ AI가 채워줬어요 (난이도: ' + normalizeLevel(result.level) + '). 확인 후 저장해주세요');
+  } catch(e){
+    console.error(e);
+    showToast('AI 채우기 실패: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'AI로 채우기';
+  }
+}
+
+async function callClaudeAPI(koreanText, apiKey){
+  const systemPrompt = `너는 태국어 회화 학습 앱의 데이터 채움 도우미야. 사용자가 입력한 한국어 표현을
+일상 회화에서 자연스럽게 쓰이는 태국어로 변환해줘. ${getPoliteInstruction()}
+난이도(level)도 판단해서 함께 알려줘 — 반드시 "초급"/"중급"/"고급" 중 하나로:
+초급(짧고 기본 단어 위주, 일상 인사·간단한 질문), 중급(일반적인 대화 수준의 문장), 고급(복잡한 문법이나 격식체, 추상적 표현).
+반드시 아래 JSON 형식으로만 응답하고, 그 외의 설명이나 마크다운 코드블록은 절대 포함하지 마.
+
+{"thai": "태국어 문자 표기", "roman": "Paiboon식 로마자 표기(성조 기호 포함, 예: à â á ǎ)", "example": "이 표현이 쓰이는 상황을 한국어로 짧게 한 문장", "level": "초급|중급|고급 중 하나"}`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 500,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: koreanText }]
+    })
+  });
+
+  if(!res.ok){
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody?.error?.message || ('API 오류 (' + res.status + ')'));
+  }
+  const data = await res.json();
+  const textBlock = (data.content || []).find(b => b.type === 'text');
+  if(!textBlock) throw new Error('AI 응답을 읽지 못했어요');
+  const cleaned = textBlock.text.replace(/```json|```/g, '').trim();
+  return JSON.parse(cleaned);
+}
+
+async function addSingleExpression(){
+  const thai = document.getElementById('addThai').value.trim();
+  const roman = document.getElementById('addRoman').value.trim();
+  const meaning = document.getElementById('addMeaning').value.trim();
+  const example = document.getElementById('addExample').value.trim();
+  const category = document.getElementById('addCategory').value;
+  const level = document.getElementById('addLevel').value;
+  if(!thai || !meaning){
+    showToast('태국어 표현과 뜻은 꼭 입력해주세요');
+    return;
+  }
+  const newExpr = { id: uid(), thai, roman, meaning, example, category, level, correct_streak: 0, status: 'active' };
+  const inserted = await insertExpressionDB(newExpr);
+  if(inserted){
+    EXPR.unshift(inserted);
+    ['addThai','addRoman','addMeaning','addExample','aiInput'].forEach(id => document.getElementById(id).value = '');
+    showToast('🌱 "' + thai + '" 심었어요!');
+    renderAddScreen();
+  }
+}
+
+function renderWordList(){
+  const list = getExpressions().filter(w => listFilterCat === 'all' || w.category === listFilterCat);
+  const listEl = document.getElementById('wordList');
+  const emptyEl = document.getElementById('listEmpty');
+  if(list.length === 0){
+    emptyEl.style.display = 'block';
+    listEl.innerHTML = '';
+    return;
+  }
+  emptyEl.style.display = 'none';
+  listEl.innerHTML = list.map(w => `
+    <div class="word-item">
+      <span class="growth">${GROWTH_ICONS[Math.min(w.correct_streak,3)]}</span>
+      <div class="info">
+        <div class="w">${escapeHtml(w.thai)}</div>
+        <div class="r">${escapeHtml(w.roman || '')}</div>
+        <div class="m">${escapeHtml(w.meaning)}</div>
+      </div>
+      <span class="cat">${escapeHtml(w.category)}</span>
+      <span class="level-tag level-${w.level || '초급'}">${escapeHtml(w.level || '초급')}</span>
+      ${w.category !== PROTECTED_CATEGORY ? `<button class="extract" onclick="extractWordsFromExpression('${w.id}')">🔍 단어추출</button>` : ''}
+      <button class="del" onclick="deleteExpression('${w.id}')">✕</button>
+    </div>
+  `).join('');
+}
+
+async function deleteExpression(id){
+  await deleteExpressionDB(id);
+  EXPR = EXPR.filter(w => w.id !== id);
+  renderAddScreen();
+  showToast('삭제했어요');
+}
+
+/* ---------------------- 통계 ---------------------- */
+function renderStats(){
+  const list = getExpressions();
+  const total = list.length;
+  const done = list.filter(w => w.status === 'completed').length;
+  const log = getStudyLog();
+  const today = log[todayStr()] || 0;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statToday').textContent = today;
+  document.getElementById('statStreak').textContent = calcStudyStreak(log);
+
+  const cats = getCategories();
+  const catEl = document.getElementById('catStats');
+  catEl.innerHTML = cats.map(c => {
+    const inCat = list.filter(w => w.category === c);
+    const doneCat = inCat.filter(w => w.status === 'completed').length;
+    const pct = inCat.length ? Math.round(doneCat / inCat.length * 100) : 0;
+    return `
+      <div style="margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; margin-bottom:4px;">
+          <span>${escapeHtml(c)}</span>
+          <span style="color:var(--sub);">${doneCat}/${inCat.length}</span>
+        </div>
+        <div style="height:8px; background:#eee4d1; border-radius:99px; overflow:hidden;">
+          <div style="height:100%; width:${pct}%; background:var(--indigo); border-radius:99px;"></div>
+        </div>
+      </div>
+    `;
+  }).join('') || '<p style="font-size:13px; color:var(--sub);">카테고리가 없어요.</p>';
+}
+
+function calcStudyStreak(log){
+  let streak = 0;
+  let d = new Date();
+  while(true){
+    const key = d.toISOString().slice(0,10);
+    if(log[key]){ streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  return streak;
+}
+
+/* ---------------------- 설정 ---------------------- */
+async function bulkClassifyLevels(){
+  const s = getSettings();
+  if(!s.claudeApiKey){ showToast('설정 탭에서 Claude API 키를 먼저 등록해주세요'); return; }
+  const items = EXPR.map(e => ({ id: e.id, meaning: e.meaning }));
+  if(items.length === 0){ showToast('분류할 표현이 없어요'); return; }
+
+  const btn = document.getElementById('bulkClassifyBtn');
+  btn.disabled = true;
+  const batchSize = 25;
+  let done = 0;
+
+  try{
+    for(let i = 0; i < items.length; i += batchSize){
+      const batch = items.slice(i, i + batchSize);
+      btn.innerHTML = '<span class="spinner"></span>분류 중... (' + done + '/' + items.length + ')';
+      const results = await callClaudeClassifyBatch(batch, s.claudeApiKey);
+      for(const r of results){
+        const idx = EXPR.findIndex(e => e.id === r.id);
+        if(idx > -1){
+          const lv = normalizeLevel(r.level);
+          EXPR[idx] = { ...EXPR[idx], level: lv };
+          await updateExpressionDB(r.id, { level: lv });
+        }
+      }
+      done += batch.length;
+    }
+    showToast('🎯 ' + items.length + '개 표현의 난이도를 재분류했어요!');
+    renderStats();
+  } catch(e){
+    console.error(e);
+    showToast('분류 실패: ' + e.message, 5000);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🎯 지금 다시 분류하기';
+  }
+}
+
+async function callClaudeClassifyBatch(items, apiKey){
+  const systemPrompt = `너는 태국어 학습 앱의 난이도 분류 도우미야. 아래 한국어 뜻 목록을 보고 각각의 난이도를 판단해줘.
+반드시 "초급"/"중급"/"고급" 중 하나로: 초급(짧고 기본 단어·인사·간단한 질문), 중급(일반적인 대화 수준의 문장), 고급(복잡한 문법·격식체·추상적 표현).
+id는 입력받은 값을 그대로 사용해줘.
+
+입력: ${JSON.stringify(items)}
+
+반드시 아래 JSON 배열 형식으로만 응답하고, 그 외의 설명이나 마크다운 코드블록은 절대 포함하지 마.
+
+[{"id": "입력의 id 그대로", "level": "초급|중급|고급 중 하나"}]`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: '분류해줘.' }]
+    })
+  });
+
+  if(!res.ok){
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody?.error?.message || ('API 오류 (' + res.status + ')'));
+  }
+  const data = await res.json();
+  const textBlock = (data.content || []).find(b => b.type === 'text');
+  if(!textBlock) throw new Error('AI 응답을 읽지 못했어요');
+  const cleaned = textBlock.text.replace(/```json|```/g, '').trim();
+  const list = JSON.parse(cleaned);
+  return Array.isArray(list) ? list : [];
+}
+
+function renderSettings(){
+  const s = getSettings();
+  document.getElementById('claudeApiKey').value = s.claudeApiKey || '';
+  document.getElementById('elToggle').classList.toggle('on', !!s.useElevenLabs);
+  document.getElementById('elSettings').style.display = s.useElevenLabs ? 'block' : 'none';
+  document.getElementById('elApiKey').value = s.elApiKey || '';
+  if(s.streakGoal) document.getElementById('streakGoal').value = String(s.streakGoal);
+  document.getElementById('politeStyle').value = s.politeStyle || 'khrap';
+  renderCatManage();
+}
+
+function savePoliteStyle(){
+  const s = getSettings();
+  s.politeStyle = document.getElementById('politeStyle').value;
+  saveSettings(s);
+  showToast('경어 스타일을 저장했어요');
+}
+
+function getPoliteInstruction(){
+  const s = getSettings();
+  const style = s.politeStyle || 'khrap';
+  return style === 'kha'
+    ? '사용자는 여성이니, 문장 끝의 경어 표현은 반드시 여성형인 "ค่ะ/คะ(카)"를 써줘 (남성형 "ครับ(크랍)"은 쓰지 마).'
+    : '사용자는 남성이니, 문장 끝의 경어 표현은 반드시 남성형인 "ครับ(크랍)"을 써줘 (여성형 "ค่ะ/คะ(카)"는 쓰지 마).';
+}
+
+function saveClaudeKey(){
+  const s = getSettings();
+  s.claudeApiKey = document.getElementById('claudeApiKey').value.trim();
+  saveSettings(s);
+  showToast('Claude API 키를 저장했어요');
+}
+
+function toggleElevenLabs(){
+  const s = getSettings();
+  s.useElevenLabs = !s.useElevenLabs;
+  saveSettings(s);
+  renderSettings();
+}
+function saveElSettings(){
+  const s = getSettings();
+  s.elApiKey = document.getElementById('elApiKey').value.trim();
+  s.elVoiceId = document.getElementById('voiceSelect').value;
+  saveSettings(s);
+  showToast('저장했어요');
+}
+async function loadVoices(){
+  const key = document.getElementById('elApiKey').value.trim();
+  if(!key){ showToast('API 키를 먼저 입력해주세요'); return; }
+  const sel = document.getElementById('voiceSelect');
+  sel.innerHTML = '<option>불러오는 중...</option>';
+  try{
+    const res = await fetch('https://api.elevenlabs.io/v1/voices', { headers: { 'xi-api-key': key } });
+    if(!res.ok) throw new Error('요청 실패');
+    const data = await res.json();
+    sel.innerHTML = (data.voices || []).map(v => `<option value="${v.voice_id}">${escapeHtml(v.name)}</option>`).join('');
+    if(sel.options.length === 0) sel.innerHTML = '<option value="">사용 가능한 목소리가 없어요</option>';
+    showToast('목소리를 불러왔어요');
+  } catch(e){
+    sel.innerHTML = '<option value="">불러오기 실패 (키 확인)</option>';
+    showToast('불러오기에 실패했어요. API 키를 확인해주세요');
+  }
+}
+
+function saveStreakGoal(){
+  const s = getSettings();
+  s.streakGoal = document.getElementById('streakGoal').value;
+  saveSettings(s);
+  showToast('암기 완료 기준을 저장했어요');
+}
+
+function renderCatManage(){
+  const cats = getCategories();
+  const list = getExpressions();
+  const el = document.getElementById('catManageList');
+  el.innerHTML = cats.map(c => {
+    const used = list.some(w => w.category === c);
+    const isProtected = c === PROTECTED_CATEGORY;
+    const rightSide = isProtected
+      ? '<span style="font-size:11px; color:var(--sub); font-weight:700; background:rgba(61,90,128,0.1); padding:3px 8px; border-radius:999px;">고정 🔒</span>'
+      : `<button class="del" onclick="deleteCategory('${escapeHtml(c)}', ${used})">삭제</button>`;
+    return `
+      <div class="cat-manage-row">
+        <span style="font-size:14px; font-weight:600;">${escapeHtml(c)}${isProtected ? ' · 단어 학습용' : ''}</span>
+        ${rightSide}
+      </div>
+    `;
+  }).join('');
+}
+function addCategory(){
+  const input = document.getElementById('newCatName');
+  const name = input.value.trim();
+  if(!name){ showToast('카테고리 이름을 입력해주세요'); return; }
+  const cats = getCategories();
+  if(cats.includes(name)){ showToast('이미 있는 카테고리예요'); return; }
+  cats.push(name);
+  saveCategories(cats);
+  input.value = '';
+  renderCatManage();
+  populateCategorySelects();
+  showToast('"' + name + '" 카테고리를 추가했어요');
+}
+function deleteCategory(name, used){
+  if(name === PROTECTED_CATEGORY){
+    showToast('이 카테고리는 고정이라 삭제할 수 없어요');
+    return;
+  }
+  if(used){ showToast('이 카테고리를 쓰는 표현이 있어서 삭제할 수 없어요'); return; }
+  let cats = getCategories().filter(c => c !== name);
+  saveCategories(cats);
+  renderCatManage();
+  populateCategorySelects();
+  showToast('삭제했어요');
+}
+
+/* ---------------------- 음성 재생 (브라우저 / ElevenLabs 혼용) ---------------------- */
+function speak(text){
+  const s = getSettings();
+  if(s.useElevenLabs && s.elApiKey && s.elVoiceId){
+    speakElevenLabs(text, s.elApiKey, s.elVoiceId);
+  } else {
+    speakBrowser(text);
+  }
+}
+function speakBrowser(text){
+  if(!('speechSynthesis' in window)){
+    showToast('이 브라우저는 음성 재생을 지원하지 않아요');
+    return;
+  }
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'th-TH';
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+  // 일부 브라우저/기기는 태국어 음성이 설치돼 있지 않을 수 있어요.
+  // 그럴 경우 소리가 안 나거나 다른 언어로 읽힐 수 있으니, 필요하면 ElevenLabs를 켜주세요.
+}
+async function speakElevenLabs(text, apiKey, voiceId){
+  try{
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: { 'xi-api-key': apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, model_id: 'eleven_multilingual_v2' })
+    });
+    if(!res.ok){
+      const errBody = await res.json().catch(() => ({}));
+      const detail = errBody?.detail?.message || errBody?.detail?.status || JSON.stringify(errBody) || res.status;
+      throw new Error('TTS 실패 (' + res.status + '): ' + detail);
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    new Audio(url).play();
+  } catch(e){
+    console.error(e);
+    showToast('ElevenLabs 실패: ' + e.message + ' → 기본 음성으로 재생', 8000);
+    speakBrowser(text);
+  }
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+/* ---------------------- INIT ---------------------- */
+(async function init(){
+  EXPR = await fetchExpressionsFromDB();
+  getCategories();  // 고정 카테고리 보장
+  reconcileCategoriesWithExpressions();  // 사라진 카테고리 자동 복구
+  populateCategorySelects();
+  renderLearn();
+})();
+</script>
+</body>
+</html>
